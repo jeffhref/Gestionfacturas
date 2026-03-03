@@ -1,0 +1,25 @@
+import java.io.Serializable;
+
+// Implementamos Serializable para que el objeto pueda ser procesado fácilmente
+public class factura implements Serializable {
+    private String numeroFactura;
+    private String cliente;
+    private double monto;
+
+    // Constructor: Para inicializar la factura con datos
+    public factura(String numeroFactura, String cliente, double monto) {
+        this.numeroFactura = numeroFactura;
+        this.cliente = cliente;
+        this.monto = monto;
+    }
+
+    // Getters: Necesarios para mostrar la información y guardar en el archivo
+    public String getNumeroFactura() { return numeroFactura; }
+    public String getCliente() { return cliente; }
+    public double getMonto() { return monto; }
+
+    // Método para dar formato a la línea que se guardará en el archivo de texto 
+    @Override
+    public String toString() {
+        return "Factura #: " + numeroFactura + " | Cliente: " + cliente + " | Monto: $" + monto;
+    }
