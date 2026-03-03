@@ -1,0 +1,93 @@
+import javax.swing.*;
+import java.io.*;
+import java.util.ArrayList;
+
+public class GestionFacturas {
+    // Lista en memoria para que el programa sea rápido y eficiente 
+    private static ArrayList<factura> listaFacturas = new ArrayList<>();
+    private static final String NOMBRE_ARCHIVO = "facturas.txt";
+
+    public static void main(String[] args) {
+        int opcion = 0;
+        // Definición del menú solicitado en la actividad 
+        String menu = "--- MENÚ DE FACTURACIÓN ---\n" +
+                      "1. Registro de facturas\n" +
+                      "2. Consulta específica de una factura\n" +
+                      "3. Mostrar facturas y guardar en archivo\n" +
+                      "4. Salir\n\n" +
+                      "Seleccione una opción:";
+
+        do {
+            try {
+                String input = JOptionPane.showInputDialog(null, menu);
+                if (input == null) break; 
+                opcion = Integer.parseInt(input);
+
+                switch (opcion) {
+                    case 1: registrarFactura(); break;
+                    case 2: consultarFactura(); break;
+                    case 3: mostrarYGuardar(); break;
+                    case 4: JOptionPane.showMessageDialog(null, "Saliendo del sistema..."); break;
+                    default: JOptionPane.showMessageDialog(null, "Opción no válida.");
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "Por favor, ingrese un número válido.");
+            }
+        } while (opcion != 4);
+    }
+
+    // Requerimiento: Registro de facturas 
+    private static void registrarFactura() {
+        String num = JOptionPane.showInputDialog("Ingrese el número de factura:");
+        String cliente = JOptionPane.showInputDialog("Ingrese el nombre del cliente:");
+        try {
+            double monto = Double.parseDouble(JOptionPane.showInputDialog("Ingrese el monto:"));
+            listaFacturas.add(new factura(num, cliente, monto));
+            JOptionPane.showMessageDialog(null, "Factura registrada con éxito.");
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Error: El monto debe ser un número.");
+        }
+    }
+
+    // Requerimiento: Consulta específica por número 
+    private static void consultarFactura() {
+        String busqueda = JOptionPane.showInputDialog("Ingrese el número de factura a consultar:");
+        boolean encontrada = false;
+
+        for (factura f : listaFacturas) {
+            if (f.getNumeroFactura().equalsIgnoreCase(busqueda)) {
+                JOptionPane.showMessageDialog(null, "Factura Encontrada:\n" + f.toString());
+                encontrada = true;
+                break;
+            }
+        }
+
+        // Mensaje obligatorio si no existe 
+        if (!encontrada) {
+            JOptionPane.showMessageDialog(null, "Factura no se encuentra registrada.");
+        }
+    }
+
+    // Requerimiento: Mostrar facturas, monto y cliente en un archivo de texto 
+    private static void mostrarYGuardar() {
+        if (listaFacturas.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "No hay facturas para mostrar.");
+            return;
+        }
+
+        StringBuilder contenido = new StringBuilder("LISTADO DE FACTURAS:\n");
+        
+        // Usamos try-with-resources para asegurar que el archivo se cierre correctamente 
+        try (PrintWriter writer = new PrintWriter(new FileWriter(NOMBRE_ARCHIVO))) {
+            for (factura f : listaFacturas) {
+                contenido.append(f.toString()).append("\n");
+                writer.println(f.toString()); // Guarda en el archivo .txt
+            }
+            // Muestra en pantalla usando la interfaz gráfica 
+            JOptionPane.showMessageDialog(null, contenido.toString());
+            JOptionPane.showMessageDialog(null, "Datos guardados en " + NOMBRE_ARCHIVO);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Error al escribir en el archivo.");
+        }
+    }
+}
